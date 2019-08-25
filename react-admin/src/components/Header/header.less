@@ -1,0 +1,45 @@
+.header{
+  align-items: center;
+  height: 80px;
+  background-color: white;
+  .header-top{
+    height: 40px;
+    border-bottom: 1px solid #1da57a;
+    text-align: right;
+    line-height: 40px;
+    a{
+      margin: 0 20px;
+    }
+  }
+  .header-bottom{
+    height: 40px;
+    display: flex;
+    align-items: center;
+    .header-bottom-left{
+      position: relative;
+      width: 25%;
+      text-align: center;
+      font-size: 20px;
+      &::after{
+        content: '';
+        position: absolute;
+        right: 50%;
+        top: 110%;
+        transform: translateX(50%);
+        border-width: 20px;
+        border-color:  white transparent transparent transparent;
+        border-style: solid dashed dashed dashed;
+      }
+    }
+    .header-bottom-right{
+      width: 75%;
+      text-align: right;
+      margin-right: 30px;
+      img{
+        margin: 0 15px;
+        width: 30px;
+        height: 30px;
+      }
+    }
+  }
+}
