@@ -1,0 +1,2 @@
+# React_admin_test
+基于react的后台管理系统为前后端分离，采用api进行数据交换
