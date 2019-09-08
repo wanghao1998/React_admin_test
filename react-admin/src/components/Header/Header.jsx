@@ -1,14 +1,13 @@
 import React,{Component} from 'react'
 import {withRouter} from 'react-router-dom'
 import {Modal} from 'antd'
+import {connect} from 'react-redux'
 
 import './header.less'
-import memoryUtils from '../../utils/memoryUtils'
 import {formateDate} from '../../utils/dateUtils'
-import storageUtils from "../../utils/storageUtils";
 import {reqWeather} from '../../ajax/index'
-import menuList from '../../config/memuCofig'
 import LinkButton from '../link-but/linkButton'
+import {logout} from '../../redux/actions'
 
 const { confirm } = Modal;
 
@@ -30,6 +29,7 @@ class Header extends Component{
         const {dayPictureUrl, weather} = await reqWeather('禹州')
         this.setState({dayPictureUrl, weather})
     };
+    /*使用redux后不再需要手动获取
     getTitle = () => {
         //得到当前请求路径
         const path = this.props.location.pathname
@@ -47,22 +47,14 @@ class Header extends Component{
             }
         })
         return title
-    }
+    }*/
     //退出框
     logout = () => {
         confirm({
             content: '确定退出吗',
             onOk: () => {
-                //console.log('OK');
-                //删除保存的user数据
-                storageUtils.removeUser()
-                memoryUtils.user = {}
-                //跳转到login
-                this.props.history.replace('/login')
-            },
-            onCancel() {
-                console.log('Cancel');
-            },
+               this.props.logout()
+            }
         });
     }
     componentDidMount() {
@@ -78,9 +70,10 @@ class Header extends Component{
     }
 
     render() {
-        const user = memoryUtils.user
+        const user = this.props.user
+
         const {currentTime, dayPictureUrl, weather} = this.state
-        const title = this.getTitle()
+        const title = this.props.headTitle
         return (
             <div className="header">
                 <div className='header-top'>
@@ -101,4 +94,6 @@ class Header extends Component{
          )
     }
 }
-export default withRouter(Header)
+export default connect(
+    state => ({headTitle:state.headTitle, user:state.user}),{logout}
+)(withRouter(Header))

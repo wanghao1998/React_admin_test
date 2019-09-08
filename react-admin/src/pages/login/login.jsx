@@ -1,12 +1,13 @@
 import React,{Component} from 'react'
-import { Form, Icon, Input, Button, message} from 'antd';
+import { Form, Icon, Input, Button} from 'antd';
 import {Redirect} from 'react-router-dom'
+import {connect} from 'react-redux'
+import {login} from '../../redux/actions'
 
 import './login.less'
 import log from '../../assets/images/logo.png'
-import {reqLogin} from '../../ajax/index'
-import memoryUtils from '../../utils/memoryUtils'
-import storageUtils from '../../utils/storageUtils'
+
+
 /*登录的路由组件*/
  class Login extends Component{
     handleSubmit = (event)=>{
@@ -18,23 +19,8 @@ import storageUtils from '../../utils/storageUtils'
                 // value为输入的值
                 //console.log('提交登录ajax请求', values);
                 const {username, password} = values
-                /*reqLogin(username, password).then(response => {
-                    console.log(response.data);
-                }).catch(error => {
-                    console.log(error);
-                })*/
-                const result = await reqLogin(username, password)
-                if (result.status===0) {
-                    message.success('登陆成功')
-                    const user = result.data
-                    memoryUtils.user = user
-                    storageUtils.saveUser(user)
-                    // 跳转到界面管理页面
-                    this.props.history.replace('/')
-                } else {
-                    message.error(result.msg)
-                }
-
+                //调用异步action函数，有结果后更新状态
+                this.props.login(username, password)
             }
         });
 /*        const form = this.props.form
@@ -43,9 +29,9 @@ import storageUtils from '../../utils/storageUtils'
     }
     render() {
         // 如果用户已经登陆跳转到管理界面
-        const user =  memoryUtils.user
+        const user =  this.props.user
         if(user && user._id){
-            return <Redirect to='./'/>
+            return <Redirect to='/home'/>
         }
         const form = this.props.form
         const {getFieldDecorator} = form
@@ -56,6 +42,7 @@ import storageUtils from '../../utils/storageUtils'
                     <h1>React项目：后台管理系统</h1>
                 </header>
                 <section className='login-content'>
+                    <div className={user.errorMsg ? 'error-msg show' : 'error-msg'}>{user.errorMsg}</div>
                         <h2>用户登录</h2>
                         <div>
                             <Form onSubmit={this.handleSubmit} className="login-form">
@@ -116,4 +103,8 @@ import storageUtils from '../../utils/storageUtils'
 * */
 //包装form
 const WrappedNormalLoginForm = Form.create()(Login);
-export  default WrappedNormalLoginForm
+export  default connect(
+    state=>({
+        user:state.user
+    }),{login}
+) (WrappedNormalLoginForm)

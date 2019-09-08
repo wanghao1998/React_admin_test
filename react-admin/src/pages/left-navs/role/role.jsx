@@ -2,14 +2,15 @@
 * 角色路由*/
 import React,{Component} from 'react'
 import {Card, Button, Table, message, Modal} from 'antd'
+import {connect} from 'react-redux'
 
 import {reqAddRole, reqRoles, reqUpdataRole} from '../../../ajax/index'
 import AddForm from "./addrole-form"
 import UpdataForm from "./updatarole-form"
-import memoryUtils from "../../../utils/memoryUtils";
 import {formateDate} from '../../../utils/dateUtils'
+import {logout} from '../../../redux/actions'
 
-export  default class Role extends Component{
+class Role extends Component{
     constructor(props) {
         super(props)
         this.auth = React.createRef()
@@ -138,14 +139,22 @@ export  default class Role extends Component{
 
         //准备数据
         const role = this.state.role
-        const user =  memoryUtils.user
+        const user =  this.props.user
         role.menus = this.auth.current.getCheck()
         role.auth_name = user.username
         const result = await reqUpdataRole(role)
         if (result.status === 0) {
             message.success('更新成功')
             this.setState({roles:[...this.state.roles]})
-            /*this.getRoles()*/
+            /*this.getRoles()*///如 果 当 前 更 新 的 是 自 己 角 色 的 权 限 ,强 制 退 出
+            if (role._id === this.props.user.role_id) {
+                this.props.logout()
+                message.success('当前用户角色权限成功')
+            } else {
+                message.success('设置角色权限成功')
+                this.setState({ roles: [...this.state.roles] })
+            }
+
         } else {
             message.error('更新失败')
         }
@@ -207,3 +216,5 @@ export  default class Role extends Component{
          )
     }
 }
+export default connect(state => ({user: state.user}), {logout}
+)(Role)

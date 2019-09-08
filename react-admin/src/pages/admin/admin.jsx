@@ -4,8 +4,8 @@
 import React,{Component} from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
 import { Layout } from 'antd';
+import {connect} from 'react-redux'
 
-import memoryUtils from '../../utils/memoryUtils'
 import LeftNav from '../../components/left-nav/left-nav'
 import Header from '../../components/Header/Header'
 import Home from '../left-navs/home/home'
@@ -16,16 +16,17 @@ import User from '../left-navs/user/user'
 import Bar from '../left-navs/charts/bar'
 import Line from '../left-navs/charts/line'
 import Pie from '../left-navs/charts/pie'
+import NotFound from '../not-found/not-found'
 import './admin.less'
 const {Footer, Sider, Content } = Layout;
-export  default class Admin extends Component{
+class Admin extends Component{
 
     render() {
-        const user = memoryUtils.user
+        const user = this.props.user
         //如果内存中没有user 当前没有登录
         if (!user._id){
             // 自动跳转灯登录
-            return <Redirect to='./login'/>
+            return <Redirect to='/login'/>
         }
         return (
                 <Layout className='layout'>
@@ -44,6 +45,7 @@ export  default class Admin extends Component{
                                 <Route path='/charts/bar' component={Bar}/>
                                 <Route path='/charts/line' component={Line}/>
                                 <Route path='/charts/pie' component={Pie}/>
+                                <Route  component={NotFound}/>
                                 <Redirect to='/home'/>
                             </Switch>
                         </Content>
@@ -53,3 +55,4 @@ export  default class Admin extends Component{
          )
     }
 }
+export default connect( state => ({user: state.user}) )(Admin)

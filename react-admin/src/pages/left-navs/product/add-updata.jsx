@@ -150,7 +150,7 @@ class ProductAdd extends Component{
                 options: [...this.state.options],
             })
     };
-
+/*同步初始化*/
     componentWillMount() {
         //取出携带的state
         const product = this.props.location.state //若果是添加则有值，否则无值
